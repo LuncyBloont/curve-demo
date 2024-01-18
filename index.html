@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>curve lab</title>
+    <meta charset="utf-8" />
+    <style>
+        canvas {
+            background-color: gray;
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+            height: 100%;
+        }
+
+        #info {
+            position: fixed;
+            z-index: 10;
+            left: 8px;
+            top: 4px;
+            border: 0px solid #FFF;
+            border-radius: 3px;
+            background-color: #323232;
+            color: #C5FF7F;
+            padding: 5px;
+        }
+    </style>
+    <script src="node_modules/glm-js/build/glm-js.min.js"></script>
+    <script src="js/draw.js"></script>
+    <script>
+
+    </script>
+</head>
+
+<body>
+    <canvas id="paper" width="800" height="600"></canvas>
+    <div id="info">
+        Type:
+        <input type="radio" id="polyline" name="type" value="polyline" checked /> <label for="polyline">Polyline</label>
+        <input type="radio" id="bezier" name="type" value="bezier" /> <label for="bezier">Bezier</label>
+        <input type="radio" id="b-spline" name="type" value="b-spline" /> <label for="b-spline">B Spline</label>
+        <br>
+        Order:
+        <input type="number" id="order" oninput="this.value = as_b_spline_order(this.value)" value="1" />
+    </div>
+    <script>
+        /** @type {HTMLCanvasElement} */
+        let paper = document.querySelector("#paper")
+
+        if (paper) {
+            console.log(paper)
+            paper.width = innerWidth
+            paper.height = innerHeight
+            register(paper, "#info>input:checked", "order")
+        } else {
+            console.error("Failed to find canvas")
+        }
+    </script>
+</body>
+
+</html>
