@@ -97,6 +97,9 @@ class Data {
             this.orderId = localStorage.getItem("orderId")
             document.getElementById(this.orderId).value = this.order
         }
+
+        /** @type {HTMLCanvasElement} */
+        this.canvas = undefined
     }
 }
 
@@ -116,6 +119,19 @@ function update(input, data) {
     let ci = -1
     let minDis = 1e9
     for (let [i, p] of data.points.entries()) {
+        if (p.x < 0.0) {
+            p.x = 0.0
+        }
+        if (p.y < 0.0) {
+            p.y = 0.0
+        }
+        if (p.x >= data.canvas.width) {
+            p.x = data.canvas.width - 1
+        }
+        if (p.y >= data.canvas.height) {
+            p.y = data.canvas.height - 1
+        }
+
         if (i > 0) {
             let p0 = data.points[i - 1].clone()
             let p1 = data.points[i].clone()
@@ -244,7 +260,7 @@ function draw(canvas, ctx, input, data) {
         ctx.stroke()
     } else if (data.curveType == "b-spline") {
         T = (i) => {
-            return glm.clamp(i * 1.0 / (data.points.length), 0.0, 1.0)
+            return glm.clamp((i - data.order) / (data.points.length - data.order), 0.0, 1.0)
         }
 
         SF_DIV = (a, b) => {
@@ -259,17 +275,20 @@ function draw(canvas, ctx, input, data) {
             }
         }
 
-        let step = 10.0 / data.length
+        let step = 20.0 / data.length
+        ctx.fillStyle = "#666"
         ctx.beginPath()
         for (let pos = 0.0; pos < 1.0 + step; pos += step) {
             let t = glm.clamp(pos, 0.0, 1.0 - 1e-7)
             let dp = glm.vec2(0.0, 0.0)
             let ci = Math.floor(t * (data.points.length - 1))
+
             for (let i = ci - data.order; i < ci + data.order + 1; ++i) {
                 let safei = glm.clamp(i, 0, data.points.length - 1)
                 dp["+="](data.points[safei]["*"](N(i, data.order, t)))
             }
             ctx.lineTo(dp.x, dp.y)
+            ctx.fillRect(dp.x - 1.5, dp.y - 1.5, 3, 3)
         }
         ctx.stroke()
     }
@@ -331,6 +350,7 @@ function register(canvas, typeSel, orderId) {
     let input = new Input()
     let data = new Data()
     data.orderId = orderId
+    data.canvas = canvas
 
     canvas.addEventListener("mousemove", (ev) => {
         ev.preventDefault()
