@@ -278,7 +278,7 @@ function draw(canvas, ctx, input, data) {
         let step = 20.0 / data.length
         ctx.fillStyle = "#666"
         ctx.beginPath()
-        for (let pos = 0.0; pos < 1.0 + step; pos += step) {
+        for (let pos = 0.0; pos < 1.0 + step && data.points.length > 0; pos += step) {
             let t = glm.clamp(pos, 0.0, 1.0 - 1e-7)
             let dp = glm.vec2(0.0, 0.0)
             let ci = Math.floor(t * (data.points.length - 1))
